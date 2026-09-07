@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Neon Calculator Game</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at top left,#312e81,transparent 40%),
+        radial-gradient(circle at bottom right,#701a75,transparent 40%),
+        #020617;
+    color:white;
+    overflow:auto;
+}
+
+/* CONTAINER */
+
+.game{
+    width:390px;
+    max-width:95%;
+    padding:20px;
+    margin:20px auto;
+
+    background:rgba(15,23,42,.96);
+
+    border:1px solid rgba(139,92,246,.5);
+
+    border-radius:25px;
+
+    box-shadow:
+        0 0 20px rgba(124,58,237,.4),
+        0 0 60px rgba(124,58,237,.15);
+
+    animation:masuk .6s ease;
+}
+
+@keyframes masuk{
+    from{
+        opacity:0;
+        transform:scale(.9);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+/* JUDUL */
+
+.header{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.header h1{
+    font-size:27px;
+    letter-spacing:1px;
+}
+
+.header p{
+    margin-top:5px;
+    color:#a78bfa;
+    font-size:13px;
+}
+
+/* STATUS */
+
+.status{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+    margin-bottom:12px;
+}
+
+.status-box{
+    background:#1e293b;
+    padding:9px 5px;
+    border-radius:12px;
+    text-align:center;
+    font-size:12px;
+}
+
+.status-box span{
+    display:block;
+    margin-top:3px;
+    font-size:16px;
+    font-weight:bold;
+}
+
+#score{
+    color:#facc15;
+}
+
+#combo{
+    color:#fb923c;
+}
+
+#nyawa{
+    color:#f43f5e;
+}
+
+/* LAYAR */
+
+.layar{
+    background:#020617;
+
+    border-radius:18px;
+
+    padding:15px;
+
+    margin-bottom:15px;
+
+    border:1px solid #334155;
+
+    box-shadow:
+        inset 0 0 15px rgba(0,0,0,.8);
+}
+
+#history{
+    height:22px;
+    text-align:right;
+    color:#64748b;
+    font-size:13px;
+    overflow:hidden;
+}
+
+#display{
+    width:100%;
+
+    border:none;
+    outline:none;
+
+    background:transparent;
+
+    color:#f8fafc;
+
+    text-align:right;
+
+    font-size:36px;
+    font-weight:bold;
+}
+
+/* TOMBOL */
+
+.tombol{
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:10px;
+}
+
+button{
+    border:none;
+
+    height:60px;
+
+    border-radius:15px;
+
+    color:white;
+
+    background:#334155;
+
+    font-size:19px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 5px 0 #1e293b;
+
+    transition:.15s;
+}
+
+button:hover{
+    filter:brightness(1.25);
+    transform:translateY(-2px);
+}
+
+button:active{
+    transform:translateY(4px);
+    box-shadow:none;
+}
+
+/* OPERATOR */
+
+.operator{
+    background:#7c3aed;
+    box-shadow:0 5px 0 #4c1d95;
+}
+
+.clear{
+    background:#dc2626;
+    box-shadow:0 5px 0 #991b1b;
+}
+
+.equal{
+    background:#16a34a;
+    box-shadow:0 5px 0 #166534;
+
+    grid-row:span 2;
+
+    height:130px;
+}
+
+.zero{
+    grid-column:span 2;
+}
+
+/* GAME AREA */
+
+.challenge{
+    margin-top:15px;
+
+    padding:15px;
+
+    text-align:center;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+        135deg,
+        rgba(124,58,237,.25),
+        rgba(30,41,59,.8)
+    );
+
+    border:1px solid rgba(139,92,246,.4);
+}
+
+.challenge-title{
+    color:#c4b5fd;
+    font-size:12px;
+    margin-bottom:7px;
+}
+
+#soal{
+    font-size:25px;
+    font-weight:bold;
+    color:#f8fafc;
+}
+
+#pesan{
+    margin-top:8px;
+    min-height:20px;
+    font-size:13px;
+}
+
+/* RIWAYAT */
+
+.riwayat{
+    margin-top:15px;
+
+    background:#020617;
+
+    border-radius:15px;
+
+    padding:12px;
+
+    max-height:130px;
+
+    overflow-y:auto;
+}
+
+.riwayat h3{
+    font-size:14px;
+    color:#c4b5fd;
+
+    margin-bottom:7px;
+}
+
+.item{
+    padding:6px 3px;
+
+    font-size:12px;
+
+    color:#cbd5e1;
+
+    border-bottom:1px solid #1e293b;
+}
+
+/* RESET */
+
+.reset{
+    width:100%;
+
+    height:43px;
+
+    margin-top:10px;
+
+    background:#475569;
+
+    box-shadow:0 4px 0 #1e293b;
+
+    font-size:14px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:400px){
+
+    .game{
+        padding:15px;
+    }
+
+    button{
+        height:55px;
+    }
+
+    .equal{
+        height:120px;
+    }
+
+    #display{
+        font-size:30px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>⚡ NEON CALCULATOR</h1>
+
+        <p>Calculator Battle Game</p>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div class="status">
+
+        <div class="status-box">
+            🏆 SKOR
+            <span id="score">0</span>
+        </div>
+
+        <div class="status-box">
+            🔥 COMBO
+            <span id="combo">0</span>
+        </div>
+
+        <div class="status-box">
+            ❤️ NYAWA
+            <span id="nyawa">❤️❤️❤️</span>
+        </div>
+
+    </div>
+
+
+    <!-- DISPLAY -->
+
+    <div class="layar">
+
+        <div id="history"></div>
+
+        <input
+            type="text"
+            id="display"
+            value="0"
+            readonly
+        >
+
+    </div>
+
+
+    <!-- BUTTON -->
+
+    <div class="tombol">
+
+        <button
+            class="clear"
+            onclick="clearDisplay()">
+            AC
+        </button>
+
+        <button onclick="deleteLast()">
+            ⌫
+        </button>
+
+        <button
+            class="operator"
+            onclick="masukkan('%')">
+            %
+        </button>
+
+        <button
+            class="operator"
+            onclick="masukkan('/')">
+            ÷
+        </button>
+
+
+        <button onclick="masukkan('7')">
+            7
+        </button>
+
+        <button onclick="masukkan('8')">
+            8
+        </button>
+
+        <button onclick="masukkan('9')">
+            9
+        </button>
+
+        <button
+            class="operator"
+            onclick="masukkan('*')">
+            ×
+        </button>
+
+
+        <button onclick="masukkan('4')">
+            4
+        </button>
+
+        <button onclick="masukkan('5')">
+            5
+        </button>
+
+        <button onclick="masukkan('6')">
+            6
+        </button>
+
+        <button
+            class="operator"
+            onclick="masukkan('-')">
+            −
+        </button>
+
+
+        <button onclick="masukkan('1')">
+            1
+        </button>
+
+        <button onclick="masukkan('2')">
+            2
+        </button>
+
+        <button onclick="masukkan('3')">
+            3
+        </button>
+
+        <button
+            class="operator"
+            onclick="masukkan('+')">
+            +
+        </button>
+
+
+        <button
+            class="zero"
+            onclick="masukkan('0')">
+            0
+        </button>
+
+        <button onclick="masukkan('.')">
+            .
+        </button>
+
+        <button
+            class="equal"
+            onclick="hitung()">
+            =
+        </button>
+
+    </div>
+
+
+    <!-- TANTANGAN -->
+
+    <div class="challenge">
+
+        <div class="challenge-title">
+            🎯 TANTANGAN MATEMATIKA
+        </div>
+
+        <div id="soal">
+            Tekan RESET untuk mulai
+        </div>
+
+        <div id="pesan">
+            Jawab soal dengan kalkulator!
+        </div>
+
+    </div>
+
+
+    <!-- RIWAYAT -->
+
+    <div class="riwayat">
+
+        <h3>
+            📜 RIWAYAT
+        </h3>
+
+        <div id="riwayatList">
+            Belum ada perhitungan.
+        </div>
+
+    </div>
+
+
+    <!-- RESET -->
+
+    <button
+        class="reset"
+        onclick="resetGame()">
+        🔄 RESET GAME
+    </button>
+
+</div>
+
+
+<script>
+
+/* =========================
+   VARIABEL
+========================= */
+
+let display =
+    document.getElementById("display");
+
+let history =
+    document.getElementById("history");
+
+let scoreElement =
+    document.getElementById("score");
+
+let comboElement =
+    document.getElementById("combo");
+
+let nyawaElement =
+    document.getElementById("nyawa");
+
+let soalElement =
+    document.getElementById("soal");
+
+let pesanElement =
+    document.getElementById("pesan");
+
+let riwayatList =
+    document.getElementById("riwayatList");
+
+
+let skor = 0;
+
+let combo = 0;
+
+let nyawa = 3;
+
+let jawabanSoal = 0;
+
+let gameAktif = true;
+
+
+/* =========================
+   KALKULATOR
+========================= */
+
+function masukkan(value){
+
+    if(!gameAktif){
+        return;
+    }
+
+    if(display.value === "0"){
+
+        display.value = value;
+
+    }else{
+
+        display.value += value;
+
+    }
+
+}
+
+
+/* CLEAR */
+
+function clearDisplay(){
+
+    display.value = "0";
+
+    history.innerText = "";
+
+}
+
+
+/* DELETE */
+
+function deleteLast(){
+
+    if(display.value.length > 1){
+
+        display.value =
+            display.value.slice(0,-1);
+
+    }else{
+
+        display.value = "0";
+
+    }
+
+}
+
+
+/* =========================
+   HITUNG
+========================= */
+
+function hitung(){
+
+    if(!gameAktif){
+        return;
+    }
+
+    try{
+
+        let ekspresi =
+            display.value;
+
+        if(
+            ekspresi === "" ||
+            ekspresi === "0"
+        ){
+
+            return;
+
+        }
+
+
+        /*
+        Hanya izinkan angka
+        dan operator matematika
+        */
+
+        if(!/^[0-9+\-*/%.() ]+$/.test(ekspresi)){
+
+            throw new Error();
+
+        }
+
+
+        let hasil =
+            Function(
+                '"use strict"; return (' +
+                ekspresi +
+                ')'
+            )();
+
+
+        if(!isFinite(hasil)){
+
+            throw new Error();
+
+        }
+
+
+        history.innerText =
+            ekspresi + " =";
+
+
+        display.value =
+            hasil;
+
+
+        tambahRiwayat(
+            ekspresi + " = " + hasil
+        );
+
+
+        skor += 10;
+
+        scoreElement.innerText =
+            skor;
+
+
+        combo++;
+
+        comboElement.innerText =
+            combo;
+
+
+        pesanElement.innerText =
+            "🔥 Perhitungan berhasil! +10 skor";
+
+
+        pesanElement.style.color =
+            "#4ade80";
+
+
+        /*
+        Cek apakah jawaban
+        cocok dengan soal
+        */
+
+        if(
+            Math.abs(
+                Number(hasil) -
+                Number(jawabanSoal)
+            ) < 0.0001
+        ){
+
+            skor += 50;
+
+            combo++;
+
+            scoreElement.innerText =
+                skor;
+
+            comboElement.innerText =
+                combo;
+
+            pesanElement.innerText =
+                "🎉 BENAR! +50 BONUS!";
+
+            pesanElement.style.color =
+                "#facc15";
+
+
+            buatSoal();
+
+        }
+
+
+    }catch(error){
+
+        display.value =
+            "ERROR";
+
+
+        combo = 0;
+
+        comboElement.innerText =
+            combo;
+
+
+        pesanElement.innerText =
+            "❌ Perhitungan tidak valid";
+
+        pesanElement.style.color =
+            "#fb7185";
+
+
+        setTimeout(function(){
+
+            display.value =
+                "0";
+
+        },1000);
+
+    }
+
+}
+
+
+/* =========================
+   RIWAYAT
+========================= */
+
+function tambahRiwayat(teks){
+
+    if(
+        riwayatList.innerText ===
+        "Belum ada perhitungan."
+    ){
+
+        riwayatList.innerHTML =
+            "";
+
+    }
+
+
+    let item =
+        document.createElement("div");
+
+
+    item.className =
+        "item";
+
+
+    item.innerText =
+        "✓ " + teks;
+
+
+    riwayatList.prepend(item);
+
+}
+
+
+/* =========================
+   BUAT SOAL
+========================= */
+
+function buatSoal(){
+
+    let angka1 =
+        Math.floor(
+            Math.random() * 20
+        ) + 1;
+
+
+    let angka2 =
+        Math.floor(
+            Math.random() * 20
+        ) + 1;
+
+
+    let operasi =
+        Math.floor(
+            Math.random() * 4
+        );
+
+
+    let simbol;
+
+
+    if(operasi === 0){
+
+        simbol = "+";
+
+        jawabanSoal =
+            angka1 + angka2;
+
+    }
+
+    else if(operasi === 1){
+
+        simbol = "-";
+
+        jawabanSoal =
+            angka1 - angka2;
+
+    }
+
+    else if(operasi === 2){
+
+        simbol = "×";
+
+        jawabanSoal =
+            angka1 * angka2;
+
+    }
+
+    else{
+
+        simbol = "÷";
+
+        /*
+        Supaya hasil pembagian
+        berupa angka bulat
+        */
+
+        angka2 =
+            Math.floor(
+                Math.random() * 9
+            ) + 2;
+
+        jawabanSoal =
+            Math.floor(
+                Math.random() * 10
+            ) + 1;
+
+        angka1 =
+            angka2 * jawabanSoal;
+
+    }
+
+
+    soalElement.innerText =
+        angka1 + " " +
+        simbol + " " +
+        angka2 + " = ?";
+
+
+    display.value =
+        "0";
+
+}
+
+
+/* =========================
+   NYAWA
+========================= */
+
+function kurangiNyawa(){
+
+    nyawa--;
+
+    let hati = "";
+
+    for(
+        let i = 0;
+        i < nyawa;
+        i++
+    ){
+
+        hati += "❤️";
+
+    }
+
+
+    if(nyawa === 0){
+
+        hati = "💀";
+
+        gameAktif = false;
+
+        pesanElement.innerText =
+            "GAME OVER! Tekan RESET.";
+
+        pesanElement.style.color =
+            "#fb7185";
+
+    }
+
+
+    nyawaElement.innerText =
+        hati;
+
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetGame(){
+
+    skor = 0;
+
+    combo = 0;
+
+    nyawa = 3;
+
+    gameAktif = true;
+
+
+    scoreElement.innerText =
+        "0";
+
+    comboElement.innerText =
+        "0";
+
+    nyawaElement.innerText =
+        "❤️❤️❤️";
+
+
+    display.value =
+        "0";
+
+
+    history.innerText =
+        "";
+
+
+    riwayatList.innerHTML =
+        "Belum ada perhitungan.";
+
+
+    pesanElement.innerText =
+        "Jawab soal dengan kalkulator!";
+
+
+    pesanElement.style.color =
+        "#cbd5e1";
+
+
+    buatSoal();
+
+}
+
+
+/* =========================
+   KEYBOARD
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        let key =
+            event.key;
+
+
+        if(
+            !isNaN(key) ||
+            key === "+" ||
+            key === "-" ||
+            key === "*" ||
+            key === "/" ||
+            key === "%" ||
+            key === "."
+        ){
+
+            masukkan(key);
+
+        }
+
+
+        if(
+            key === "Enter" ||
+            key === "="
+        ){
+
+            hitung();
+
+        }
+
+
+        if(
+            key === "Backspace"
+        ){
+
+            deleteLast();
+
+        }
+
+
+        if(
+            key === "Escape"
+        ){
+
+            clearDisplay();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   MULAI GAME
+========================= */
+
+resetGame();
+
+</script>
+
+</body>
+</html>
